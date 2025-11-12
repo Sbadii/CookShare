@@ -1,4 +1,5 @@
 import React from "react";
+import backgroundImg from './assets/background.jpg';
 
 const App: React.FC = () => {
   return (
@@ -8,10 +9,11 @@ const App: React.FC = () => {
         {/* Image d'arrière-plan */}
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('https://placehold.co/1920x1080')" }}
+          style={{ backgroundImage: `url(${backgroundImg})` }}
         >
           <div className="absolute inset-0 bg-black opacity-50"></div>
         </div>
+
 
         {/* Header */}
         <header className="absolute top-0 w-full flex justify-between items-center p-6 z-10">
