@@ -1,4 +1,3 @@
-// src/main/java/com/example/backendCookShare/config/CorsConfig.java
 package com.example.backendCookShare.config;
 
 import org.springframework.context.annotation.Bean;

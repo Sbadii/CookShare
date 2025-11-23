@@ -1,11 +1,13 @@
-package com.cookshare.backend.service;
+package com.example.backendCookShare.service;
 
-import com.cookshare.backend.model.dto.request.LoginRequest;
-import com.cookshare.backend.model.dto.request.RegisterRequest;
-import com.cookshare.backend.model.dto.response.AuthResponse;
-import com.cookshare.backend.model.entity.User;
-import com.cookshare.backend.repository.UserRepository;
+import com.example.backendCookShare.model.dto.request.LoginRequest;
+import com.example.backendCookShare.model.dto.request.RegisterRequest;
+import com.example.backendCookShare.model.dto.response.AuthResponse;
+import com.example.backendCookShare.model.entity.User;
+import com.example.backendCookShare.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    // =============================
+    //          REGISTER
+    // =============================
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -43,6 +48,9 @@ public class AuthService {
         );
     }
 
+    // =============================
+    //            LOGIN
+    // =============================
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())

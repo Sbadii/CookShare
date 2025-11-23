@@ -1,14 +1,14 @@
-package com.cookshare.backend.model.dto.response;
+package com.example.backendCookShare.model.dto.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class AuthResponse {
-
     private String token;
     private Long userId;
     private String username;
     private String email;
+    private String avatarUrl;
 }

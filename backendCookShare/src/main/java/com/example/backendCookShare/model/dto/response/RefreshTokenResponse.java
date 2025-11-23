@@ -1,4 +1,4 @@
-package com.cookshare.backend.model.dto.response;
+package com.example.backendCookShare.model.dto.response;
 
 import lombok.*;
 

@@ -1,13 +1,15 @@
-package com.cookshare.backend.service;
+package com.example.backendCookShare.service;
 
-import com.cookshare.backend.model.entity.User;
+import com.example.backendCookShare.model.entity.User;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.*;
+import java.util.Date;
 
 @Service
 public class JwtService {
@@ -15,7 +17,11 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
+    // =============================
+    //         GENERATE TOKEN
+    // =============================
     public String generateToken(User user) {
+
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
@@ -26,12 +32,21 @@ public class JwtService {
                 .compact();
     }
 
+    // =============================
+    //         EXTRACT EMAIL
+    // =============================
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
 
-    public boolean isTokenValid(String token, User user) {
-        return extractEmail(token).equals(user.getEmail()) && !isTokenExpired(token);
+    // =============================
+    //        VALIDATE TOKEN
+    // =============================
+    public boolean isTokenValid(String token, String email) {
+        String extractedEmail = extractEmail(token);
+        return extractedEmail != null &&
+                extractedEmail.equals(email) &&
+                !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

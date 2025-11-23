@@ -1,4 +1,4 @@
-package com.cookshare.backend.model.dto.request;
+package com.example.backendCookShare.model.dto.request;
 
 import lombok.*;
 

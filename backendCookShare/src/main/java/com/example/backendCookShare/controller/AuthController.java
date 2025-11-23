@@ -1,10 +1,12 @@
-package com.cookshare.backend.controller;
+package com.example.backendCookShare.controller;
 
-import com.cookshare.backend.model.dto.request.LoginRequest;
-import com.cookshare.backend.model.dto.request.RegisterRequest;
-import com.cookshare.backend.model.dto.response.AuthResponse;
-import com.cookshare.backend.service.AuthService;
+import com.example.backendCookShare.model.dto.request.LoginRequest;
+import com.example.backendCookShare.model.dto.request.RegisterRequest;
+import com.example.backendCookShare.model.dto.response.AuthResponse;
+import com.example.backendCookShare.service.AuthService;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
