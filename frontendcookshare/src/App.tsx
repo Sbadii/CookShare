@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import backgroundImg from "./assets/background.jpg";
 import Dashboard from './pages/Dashboard';
+import CreateRecipePage from './pages/CreateRecipePage';
 
-<Route path="/dashboard" element={<Dashboard />} />
+
+
+
 // ===============
 // PAGE D'ACCUEIL
 // ===============
@@ -642,6 +645,8 @@ const App: React.FC = () => {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard/create-recipe" element={<CreateRecipePage />} />
+      <Route path="/dashboard/create-recipe" element={<CreateRecipePage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -32,26 +32,7 @@ const Dashboard: React.FC = () => {
     },
   ];
 
-  const events = [
-    {
-      id: 1,
-      title: "Chef's Plating Battle",
-      location: "Tokyo, JPN",
-      date: "22 July 2025",
-      time: "4:00 PM",
-      attendees: 15,
-      image: "https://placehold.co/200x150/FFD700/000?text=Plating",
-    },
-    {
-      id: 2,
-      title: "Best Breakfast Showdown",
-      location: "Paris, FRA",
-      date: "18 July 2025",
-      time: "6:00 PM",
-      attendees: 15,
-      image: "https://placehold.co/200x150/FFD700/000?text=Breakfast",
-    },
-  ];
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -115,7 +96,10 @@ const Dashboard: React.FC = () => {
               placeholder="Search..."
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-            <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
+            <button
+              onClick={() => navigate("/dashboard/create-recipe")}
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
+            >
               + Create Recipe
             </button>
           </div>
@@ -233,45 +217,6 @@ const Dashboard: React.FC = () => {
           </div>
         </section>
 
-        <section>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Events</h2>
-            <button className="text-sm text-green-600 hover:underline">See more</button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {events.map((event) => (
-              <div key={event.id} className="bg-white rounded-lg shadow overflow-hidden">
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-40 object-cover"
-                />
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold">{event.title}</h3>
-                    <div className="h-6 w-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs">
-                      📍
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-600 mb-2">{event.location}</div>
-                  <div className="flex items-center text-sm text-gray-500 mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14" />
-                    </svg>
-                    {event.date} • {event.time}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h-8v-2a6 6 0 0112 0v2z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v6h14v-6M5 8v6a2 2 0 104 0V8M9 8v6h6V8M9 8a2 2 0 00-4 0v6a2 2 0 004 0V8zm10 0a2 2 0 00-4 0v6a2 2 0 004 0V8z" />
-                    </svg>
-                    {event.attendees} joined
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
       </main>
     </div>
   );
