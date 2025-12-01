@@ -24,9 +24,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 
+                .cors(cors -> {})  // active les règles CORS du CorsConfig
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()  // IMPORTANT !!!
-                        .anyRequest().authenticated()
+                        .requestMatchers("/auth/**").permitAll()  // login / register autorisés
+                        .anyRequest().authenticated()             // tout le reste sécurisé
                 )
 
                 .sessionManagement(session ->
