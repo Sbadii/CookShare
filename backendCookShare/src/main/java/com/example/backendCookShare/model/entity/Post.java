@@ -13,7 +13,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "posts")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Post {
 
     @Id
@@ -33,6 +37,7 @@ public class Post {
 
     private String cookingTime;
 
+    @Column(name = "image_url")
     private String imageUrl;
 
     @Builder.Default
@@ -51,9 +56,11 @@ public class Post {
     @JoinColumn(name = "author_id")
     private User author;
 
+    @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 }

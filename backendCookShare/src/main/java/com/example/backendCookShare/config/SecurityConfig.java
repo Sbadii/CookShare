@@ -16,27 +16,34 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
+        private final JwtAuthFilter jwtAuthFilter;
+        private final org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(csrf -> csrf.disable())
+                http
+                                .csrf(csrf -> csrf.disable())
 
-                .cors(cors -> {})  // active les règles CORS du CorsConfig
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()  // login / register autorisés
-                        .anyRequest().authenticated()             // tout le reste sécurisé
-                )
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/auth/**", "/uploads/**").permitAll()
+                                                .requestMatchers(org.springframework.http.HttpMethod.GET, "/posts")
+                                                .permitAll()
+                                                .anyRequest().authenticated() // tout le reste sécurisé
+                                )
 
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
+
+        @Bean
+        public org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer webSecurityCustomizer() {
+                return (web) -> web.ignoring().requestMatchers("/uploads/**");
+        }
 }

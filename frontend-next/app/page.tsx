@@ -1,102 +1,89 @@
-// src/app/page.tsx
 import HeroBanner from "./components/HeroBanner";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import RecipeCard from "./components/RecipeCard";
 
-export default function HomePage() {
+interface Post {
+  id: number;
+  title: string;
+  description: string;
+  cookingTime: string;
+  imageUrl: string;
+  createdAt: string;
+  authorName: string;
+  likeCount: number;
+  commentCount: number;
+  theme?: string;
+  type?: string;
+  diet?: string;
+}
+
+async function getPosts(): Promise<Post[]> {
+  try {
+    const res = await fetch("http://localhost:8080/posts", {
+      cache: "no-store"
+    });
+    if (!res.ok) {
+      console.error("Failed to fetch posts:", res.status);
+      return [];
+    }
+    const data = await res.json();
+    console.log("✅ Posts fetched:", data.length, "posts");
+    if (data.length > 0) {
+      console.log("First post:", data[0]);
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  const posts = await getPosts();
+
   return (
-    <div className="font-sans">
+    <div className="font-sans bg-gray-50 min-h-screen">
       <Header />
-
       <HeroBanner />
 
-      {/* === Section 2 : Recipe of the Week === */}
-      <section className="py-12 px-4 md:px-8 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Recipe<br />
-            <span className="text-green-600">of the week</span>
-          </h2>
+      {/* Transition Section - Séparation dynamique */}
+      <div className="relative py-16 bg-gradient-to-b from-gray-900 to-gray-50">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent"></div>
+        <div className="relative max-w-7xl mx-auto px-6 text-center">
+         
+        </div>
+      </div>
 
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* ---- LEFT ---- */}
-            <div className="lg:w-2/3 bg-gray-100 rounded-lg p-6">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="md:w-1/2">
-                  <div className="h-64 bg-gray-300 rounded-lg"></div>
-                </div>
+      {/* Section des recettes - Pleine largeur */}
+      <section className="py-16 bg-gray-50">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          {/* En-tête */}
 
-                <div className="md:w-1/2 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <img width="20" height="20" src="https://img.icons8.com/ios/50/time--v1.png" />
-                      <span className="text-sm">2025/11/10</span>
-                    </div>
 
-                    <div className="flex items-center space-x-1 mb-2">
-                      {[...Array(4)].map((_, i) => (
-                        <img key={i} width="25" height="25" src="https://img.icons8.com/skeuomorphism/32/star.png" />
-                      ))}
-                      <span className="ml-1 text-sm">4.7 (19)</span>
-                    </div>
-
-                    <h3 className="text-xl font-bold mb-1">Rhubarb Muffins</h3>
-                    <p className="text-sm text-green-600 mb-4">by ArwensThermoPics</p>
-
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="flex items-center space-x-2">
-                        <img width="30" height="30" src="https://img.icons8.com/ios/50/rice-bowl.png" />
-                        <span className="text-sm">Preparation time</span>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <img width="30" height="30" src="https://img.icons8.com/ios/50/time--v1.png" />
-                        <span className="text-sm">Total time</span>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <img width="30" height="30" src="https://img.icons8.com/ios/50/meal.png" />
-                        <span className="text-sm">Portion --</span>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <img width="30" height="30" src="https://img.icons8.com/wired/64/chef-hat.png" />
-                        <span className="text-sm">Level easy</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
-                    View recipe
-                  </button>
-                </div>
-              </div>
+          {/* Grille de recettes */}
+          {posts.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="text-5xl mb-4">🍳</div>
+              <p className="text-gray-500 text-xl">Aucune recette disponible pour le moment.</p>
+              <p className="text-gray-400 mt-2">Revenez plus tard !</p>
             </div>
-
-            {/* ---- RIGHT ---- */}
-            <div className="lg:w-1/3">
-              <h3 className="text-xl font-bold mb-4">Previous Recipes of the Week</h3>
-              <div className="space-y-4">
-                {[
-                  { title: "Rhubarb Muffins", date: "2025/11/10" },
-                  { title: "Carola's Brussels Sprout Delight", date: "2025/11/03" },
-                  { title: "Minted Lamb Burgers / Patties", date: "2025/10/27" },
-                  { title: "Smokey rub", date: "2025/10/20" },
-                ].map((recipe, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded">
-                    <div className="h-12 w-12 bg-gray-300 rounded"></div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{recipe.title}</p>
-                      <p className="text-xs text-gray-500">{recipe.date}</p>
-                    </div>
-                  </div>
+          ) : (
+            <div className="w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+                {posts.map(post => (
+                  <RecipeCard key={post.id} post={post} />
                 ))}
               </div>
-              <div className="mt-4">
-                <a href="#" className="text-green-600 hover:underline">All Recipes</a>
+
+              {/* Message de nombre de recettes */}
+              <div className="mt-10 text-center">
+                <p className="text-gray-500 inline-block bg-white px-4 py-2 rounded-full shadow-sm">
+                  {posts.length} recette{posts.length > 1 ? 's' : ''} disponible{posts.length > 1 ? 's' : ''}
+                </p>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
