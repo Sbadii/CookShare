@@ -22,4 +22,5 @@ public class PostResponse {
     private String authorName;
     private Long likeCount;
     private Long commentCount;
+    private java.util.List<CommentResponse> comments;
 }

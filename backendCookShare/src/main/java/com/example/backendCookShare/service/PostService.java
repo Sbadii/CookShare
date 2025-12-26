@@ -27,6 +27,13 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public PostResponse getPostById(Long id) {
+        com.example.backendCookShare.model.entity.Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        return postMapper.toResponse(post);
+    }
+
     @Transactional
     public PostResponse createPost(com.example.backendCookShare.model.dto.request.PostRequest request,
             org.springframework.web.multipart.MultipartFile image) {

@@ -14,7 +14,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white mt-20">
+    <footer className="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white mt-20" >
       {/* Decorative top border */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-400"></div>
 

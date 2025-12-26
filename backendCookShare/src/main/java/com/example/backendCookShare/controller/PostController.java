@@ -25,6 +25,11 @@ public class PostController {
         return ResponseEntity.ok(postService.getAllPosts());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
+        return ResponseEntity.ok(postService.getPostById(id));
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponse> createPost(
             @RequestPart("post") PostRequest request,
