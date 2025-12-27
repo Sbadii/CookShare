@@ -1,9 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function HeroBanner() {
   const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/?query=${encodeURIComponent(searchQuery)}`);
+    } else {
+      router.push('/');
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center text-white overflow-hidden">
@@ -55,13 +71,17 @@ export default function HeroBanner() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   placeholder="Rechercher une recette, un ingrédient ou un chef…"
                   className="w-full text-gray-800 text-lg outline-none placeholder-gray-400 bg-transparent"
                 />
               </div>
 
               {/* Button */}
-              <button className="mt-3 md:mt-0 md:ml-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-10 py-4 rounded-2xl font-bold shadow-lg hover:shadow-green-500/40 transition-all duration-300 flex items-center justify-center gap-2">
+              <button
+                onClick={handleSearch}
+                className="mt-3 md:mt-0 md:ml-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-10 py-4 rounded-2xl font-bold shadow-lg hover:shadow-green-500/40 transition-all duration-300 flex items-center justify-center gap-2"
+              >
                 Rechercher
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}

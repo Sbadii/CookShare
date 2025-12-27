@@ -48,6 +48,12 @@ export default function CommentSection({ postId, comments: initialComments }: Co
       });
 
       if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('token');
+          alert("Votre session a expiré. Veuillez vous reconnecter.");
+          router.push('/login');
+          return;
+        }
         const errorText = await res.text();
         console.error("❌ Failed to add comment:", res.status, errorText);
         throw new Error(`Erreur lors de l'ajout du commentaire: ${res.status} ${res.statusText}`);

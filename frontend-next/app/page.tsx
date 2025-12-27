@@ -18,9 +18,13 @@ interface Post {
   diet?: string;
 }
 
-async function getPosts(): Promise<Post[]> {
+async function getPosts(query: string = ""): Promise<Post[]> {
   try {
-    const res = await fetch("http://localhost:8080/posts", {
+    const url = query
+      ? `http://localhost:8080/posts?query=${encodeURIComponent(query)}`
+      : "http://localhost:8080/posts";
+
+    const res = await fetch(url, {
       cache: "no-store",
     });
     if (!res.ok) return [];
@@ -30,8 +34,13 @@ async function getPosts(): Promise<Post[]> {
   }
 }
 
-export default async function HomePage() {
-  const posts = await getPosts();
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ query?: string }>;
+}) {
+  const { query } = await searchParams;
+  const posts = await getPosts(query);
 
   return (
     // ✅ WRAPPER VISUEL OBLIGATOIRE

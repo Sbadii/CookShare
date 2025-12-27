@@ -21,7 +21,11 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
+    public ResponseEntity<List<PostResponse>> getAllPosts(@RequestParam(required = false) String query) {
+        if (query != null && !query.isEmpty()) {
+            log.info("🔍 Searching posts with query: {}", query);
+            return ResponseEntity.ok(postService.searchPosts(query));
+        }
         return ResponseEntity.ok(postService.getAllPosts());
     }
 
