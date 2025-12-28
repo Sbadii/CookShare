@@ -4,9 +4,6 @@ import backgroundImg from "./assets/background.jpg";
 import Dashboard from './pages/Dashboard';
 import CreateRecipePage from './pages/CreateRecipePage';
 
-
-
-
 // ===============
 // PAGE D'ACCUEIL
 // ===============
@@ -22,12 +19,13 @@ const HomePage: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8081/api/auth/login", {
+      // ✅ Correction : utiliser "password" (pas "motDePasse")
+      const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, motDePasse: password }),
+        body: JSON.stringify({ email, password }), // ← ici
       });
 
       if (response.ok) {
@@ -166,6 +164,7 @@ const HomePage: React.FC = () => {
         </div>
       )}
 
+      {/* Le reste de ton HomePage reste identique → sections 2 à 7... */}
       {/* === Section 2 : Recipe of the Week === */}
       <section className="py-12 px-4 md:px-8 bg-white">
         <div className="max-w-6xl mx-auto">
@@ -175,13 +174,15 @@ const HomePage: React.FC = () => {
             <span className="text-green-600">of the week</span>
           </h2>
 
+          {/* Contenu inchangé → tu peux le garder tel quel */}
+          {/* ... (tu peux conserver tout ce qui suit jusqu’à la fin) ... */}
+          {/* Pour des raisons de brièveté, je ne répète pas les sections identiques */}
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="lg:w-2/3 bg-gray-100 rounded-lg p-6">
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="md:w-1/2">
                   <div className="h-64 bg-gray-300 rounded-lg"></div>
                 </div>
-
                 <div className="md:w-1/2 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center space-x-2 mb-2">
@@ -190,7 +191,7 @@ const HomePage: React.FC = () => {
                     </div>
                     <div className="flex items-center space-x-1 mb-2">
                       {[...Array(4)].map((_, i) => (
-                        <img width="25" height="25" src="https://img.icons8.com/skeuomorphism/32/star.png" alt="star"/>
+                        <img key={i} width="25" height="25" src="https://img.icons8.com/skeuomorphism/32/star.png" alt="star"/>
                       ))}
                       <img
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAC2UlEQVR4nO2XS2jTcBzHq4Kg3id6niCKO4iPkx48eVSmInpR8eJh3jwog6JuugebQmfRrY+tq+1MZ03SpmvWdEkfSZM262KWbd3abgcZCDKcD9zAx0/+gmOTbqzpQwR/8IHA//d90CaEGAz/8szltKtzOe3KXwlX1cTufE5bms1ry5OT8p6qF5jJKE35nAaImYxyv6rh8/Pyzukp5V12RgXEdGZsQVGUXVUroCrSzemMAqtRVamhKuEA2LaJ8VR2ajINq9HGU7PorOIFZDl2YUKToRCyHDtf8QLpUSExriahEGmZT1U0nOfDJ1+PJUBVxIKgMzHOnChDEF0jCMxhPsqckQS2QRTYlpQU6U8lo7NKWoCNQDtoF2mQFnn88uLpmnUDBYE5lkxwYSnBZVNSZElORmE0FYO0HC8LyAt5Im+UgbJ4PnR0pUCUpc9JCfYHWqoGKCsyEqxf8ytwXPCaKIx8TYocVBJRYL+x4cCNgn8Fw/jO8rHQF1EYgUogxJlllvFd3PAGpKmXp6JccFGIM1BOYpHgp1CQOL2pp4AJEHVsmJqPR4ehHHBs4C2Fe44YihmCwGoZmsxG2SCUAkOTcyQ5uN+gZ3DctTcUwJVIOAB6QFrkYShlKAJ7yIb8oAc//uKBodTx49hwmCZBDxSB0SWFA8AWP+5ZCA3hoAeK8CwgD90FBp/b9gVID9CUVxdIizkctboLDDgsl4d8g1AKbmfPJd0FMLe9kyIwKATpdX/3uO19CHS93h7y0F/A1RfxvRqA1ZBeN2Cu3qSt27zy3rc+6zo+4LTF0Nmf+5irl9MVbjQat7qd1g9erB9+43Za3th6TNfXu7Es5sf1LkdPfo2m3/YReRVdoK3NWGe3msFhfwrWbtPnJ6b25o6Ojh2bKL6961HrLUu3aRFpe61maGm5d6joAo2NjQc725vft7XetTQ13Sn6ywdpkBZ5GI23DxRd4P8YqjQ/AReaLMq3hNR6AAAAAElFTkSuQmCC"
@@ -254,6 +255,10 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      {/* Tu peux garder toutes les autres sections identiques */}
+      {/* Sections 3 à 7 inchangées → elles ne contiennent pas de logique backend */}
+      {/* ... (copie-les telles quelles depuis ton code original) ... */}
+
       {/* === Section 3 : Cook on TM7/TM6 === */}
       <section className="py-12 px-4 md:px-8 bg-gray-100 rounded-t-3xl">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8">
@@ -289,7 +294,7 @@ const HomePage: React.FC = () => {
                 <div className="p-4">
                   <div className="flex items-center space-x-1 mb-2">
                     {[...Array(5)].map((_, i) => (
-                      <img width="25" height="25" src="https://img.icons8.com/skeuomorphism/32/star.png" alt="star"/>
+                      <img key={i} width="25" height="25" src="https://img.icons8.com/skeuomorphism/32/star.png" alt="star"/>
                     ))}
                   </div>
                   <h3 className="font-semibold mb-1">{recipe.title}</h3>
@@ -333,7 +338,7 @@ const HomePage: React.FC = () => {
                 <div className="p-4">
                   <div className="flex items-center space-x-1 mb-2">
                     {[...Array(5)].map((_, i) => (
-                      <img width="25" height="25" src="https://img.icons8.com/skeuomorphism/32/star.png" alt="star"/>
+                      <img key={i} width="25" height="25" src="https://img.icons8.com/skeuomorphism/32/star.png" alt="star"/>
                     ))}
                     <span className="ml-1 text-sm">5.0 (1)</span>
                   </div>
@@ -374,13 +379,13 @@ const HomePage: React.FC = () => {
                 </div>
                 <div className="flex space-x-3">
                   <button className="text-gray-500 hover:text-gray-700">
-                    <div className="h-5 w-5 ">
-                      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAChklEQVR4nO2XTUhUURTHf6ZUKET0IdnCTVKGi4iQksqFSCuLJIkKCaJNEKJE5CpqKRKEQkQu2gTirqJNhJs+rISCtgYFhhUWURRmSfniwhk4zcxz7oxv3hf3B5eZeXPfefd/3z3/ey44HA6HIyK8lDRSJySpeKkV0kDyaMgn5Auwn+SwG5j1S/ZfwDHiTyfw0y/Zr8vnX6CP+HJOxqjHnJPsvarTELCC+FAJDMvYFoHLhVzriHptt4FqoqcauKuW/wlb+90DfJLrk0At0bEeeKIMqbXYfWQLMCX/vQG2EY29vpYxvAUaS90QzWw8jsieW4DPFqvCemdfBYyFbM9dwLxlnhZVolSIS2Q7RjnoLdI5S6q1zEP+SP8RoIpg7fWamqz+cheNh4E5uedOQPZcA9yTmGZJHQ2r+tV1zvNl2nMd8FJizUrsUMv4nWqZlWrPTcC0xDCxTEzCFNKk9pjFJTarpWgDvmbFmJLYoQg5BHyTe14B24FR+f0b6LaIcVL6Zux1qyxRD/hR7hwxrjKoZu+WSnRjkVfU7F70sU1z7ZKKcVX1Ww3cVDEG5ZmBCtkAjEu/BaDHp99ZlTcPgQ5go7SDwCOVD34xzqi3NS7PDkTILpWQH4F9BQIfAD5kHXp0ew+0W5QnM9J/WsawLCGnVKkwAWzGjrXABVn3c9KeAeeBNZYxNqk3OC9jKVqI2bEH1H83gJWET5XFOHyFmFl/qmbiNNFzXFUTL4D6QkL2qvX9DmgmPuyQjdeTQ5/Zh/IK6RFHMt8fyFkkbqwD7me5Z46QjH8PWPp3VFRIZZwp9XOEfJcDTVLoUCXOf0LynYfjTmMQ1W9c8FIrxEt4IzVCHA6Hw0HY/AN8XwJoJc/SDAAAAABJRU5ErkJggg==" alt="secured-letter--v1"></img>
+                    <div className="h-5 w-5">
+                      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAChklEQVR4nO2XTUhUURTHf6ZUKET0IdnCTVKGi4iQksqFSCuLJIkKCaJNEKJE5CpqKRKEQkQu2gTirqJNhJs+rISCtgYFhhUWURRmSfniwhk4zcxz7oxv3hf3B5eZeXPfefd/3z3/ey44HA6HIyK8lDRSJySpeKkV0kDyaMgn5Auwn+SwG5j1S/ZfwDHiTyfw0y/Zr8vnX6CP+HJOxqjHnJPsvarTELCC+FAJDMvYFoHLhVzriHptt4FqoqcauKuW/wlb+90DfJLrk0At0bEeeKIMqbXYfWQLMCX/vQG2EY29vpYxvAUaS90QzWw8jsieW4DPFqvCemdfBYyFbM9dwLxlnhZlolSIS2Q7RjnoLdI5S6q1zEP+SP8RoIpg7fWamqz+cheNh4E5uedOQPZcA9yTmGZJHQ2r+tV1zvNl2nMd8FJizUrsUMv4nWqZlWrPTcC0xDCxTEzCFNKk9pjFJTarpWgDvmbFmJLYoQg5BHyTe14B24FR+f0b6LaIcVL6Zux1qyxRD/hR7hwxrjKoZu+WSnRjkVfU7F70sU1z7ZKKcVX1Ww3cVDEG5ZmBCtkAjEu/BaDHp99ZlTcPgQ5go7SDwCOVD34xzqi3NS7PDkTILpWQH4F9BQIfAD5kHXp0ew+0W5QnM9J/WsawLCGnVKkwAWzGjrXABVn3c9KeAeeBNZYxNqk3OC9jKVqI2bEH1H83gJWET5XFOHyFmFl/qmbiNNFzXFUTL4D6QkL2qvX9DmgmPuyQjdeTQ5/Zh/IK6RFHMt8fyFkkbqwD7me5Z46QjH8PWPp3VFRIZZwp9XOEfJcDTVLoUCXOf0LynYfjTmMQ1W9c8FIrxEt4IzVCHA6Hw0HY/AN8XwJoJc/SDAAAAABJRU5ErkJggg==" alt="secured-letter--v1"></img>
                     </div>
                   </button>
                   <button className="text-gray-500 hover:text-gray-700">
-                    <div className="h-5 w-5 ">
-                      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABlklEQVR4nO2Vzy4DURTGf9NFIwQ7O6nnsFIL6UbCxp8lEi0SL8BWWPmbCp7Bgu4aPADpO5SFathgg5BUbnImOWFmOqZzh0i/ZJJ2vnPO77tz77TQVlt/VClgGigBNeADuAfOgRmgw6PH3JsFLoAH6TG9p8CkzAylAaACNAKuOjCmesblXlDPFZAJA69LQxWYB/qBtHhLwI0augasq+/XwKLUpqW3IPeNfxcUIqVWXga6ferMo14F3hXYfF7x2RqjHuBMai/9tmNKrdwPrjUMPAGPQDZEfa96ehNeBSUx84TXkFxhtSCMEy+zJqbZN1vKCOPWy3wTs9NigC5hvHqZVTEHLQbIqnP2TdtiHlsMUBbGnpfZBzxLwZwFeF5mvwSds4IqysUIz8m+m9nLzYo3Yw6Rk1lm5lbYpg1pMG/GaAvwkSjwuEJouDngzk8HOMBOxBAafhAF3kqI2OBRQmj4YRxwV2bQbpMQ1uBhQmj4kQ14UIjE4K4MoKh+rFx4MQm4K0f+UBpJrvyrDHBfrsThrpzfhPMv9AmOeJf9ULW3GwAAAABJRU5ErkJggg==" alt="like--v1"></img>
+                    <div className="h-5 w-5">
+                      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABlklEQVR4nO2Vzy4DURTGf9NFIwQ7O6nnsFIL6UbCxp8lEi0SL8BWWPmbCp7Bgu4aPADpO5SFathgg5BUbnImOWFmOqZzh0i/ZJJ2vnPO77tz77TQVlt/VClgGigBNeADuAfOgRmgw6PH3JsFLoAH6TG9p8CkzAylAaACNAKuOjCmesblXlDPFZAJA69LQxWYB/qBtHhLwI0augasq+/XwKLUpqW3IPeNfxcUIqVWXga6ferMo14F3hXYfF7x2RqjHuBMai/9tmNKrdwPrjUMPAGPQDZEfa96ehNeBSUx84TXkFxhtSCMEy+zJqbZN1vKCOPWy3wTs9NigC5hvHqZVTEHLQbIqnP2TdtiHlsMUBbGnpfZBzxLwZwFeF5mvwSds4IqysUIz8m+m9nLzYo3Yw6Rk1lm5lbYpg1pMG/GaAvwkSjwuEJouDngzk8HOMBOxBAafhAF3kqI2OBRQmj4kQ14UIjE4K4MoKh+rFx4MQm4K0f+UBpJrvyrDHBfrsThrpzfhPMv9AmOeJf9ULW3GwAAAABJRU5ErkJggg==" alt="like--v1"></img>
                     </div>
                   </button>
                 </div>
@@ -461,8 +466,6 @@ const HomePage: React.FC = () => {
   );
 };
 
-
-
 // ===============
 // INSCRIPTION
 // ===============
@@ -498,15 +501,16 @@ const RegisterPage: React.FC = () => {
     }
 
     try {
+      // ✅ Correction : envoyer les champs en anglais comme attendu par le backend
       const response = await fetch("http://localhost:8080/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          nom: formData.nom,
-          prenom: formData.prenom,
-          nomUtilisateur: formData.nomUtilisateur,
+          firstName: formData.prenom,        // prénom → firstName
+          lastName: formData.nom,            // nom → lastName
+          username: formData.nomUtilisateur, // nomUtilisateur → username
           email: formData.email,
-          motDePasse: formData.motDePasse,
+          password: formData.motDePasse,     // motDePasse → password
         }),
       });
 
@@ -646,7 +650,7 @@ const App: React.FC = () => {
       <Route path="/" element={<HomePage />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/dashboard/create-recipe" element={<CreateRecipePage />} />
-      <Route path="/dashboard/create-recipe" element={<CreateRecipePage />} />
+      {/* Évite les doublons : une seule route */}
       <Route path="/register" element={<RegisterPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

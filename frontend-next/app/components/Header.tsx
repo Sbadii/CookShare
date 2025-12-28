@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 
 import { useState, useEffect } from "react";
@@ -44,6 +45,28 @@ export default function Header() {
             🍳 CookShare
           </div>
         </div>
+=======
+// src/components/Header.tsx
+"use client";
+
+import { useRouter } from "next/navigation";
+
+export default function Header() {
+  const router = useRouter();
+
+  const handleLoginClick = () => {
+    router.push("/login");
+  };
+
+  return (
+    <header className="absolute top-0 left-0 right-0 flex justify-between items-center p-6 z-[9999] text-white">
+      {/* Fond transparent, mais on peut ajouter un léger opacité si besoin */}
+      <nav className="hidden md:flex space-x-8">
+        <a href="#" className="hover:underline">Browse</a>
+        <a href="#" className="hover:underline">About Us</a>
+        <a href="#" className="hover:underline">Help</a>
+      </nav>
+>>>>>>> 6790863 (Save local changes)
 
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center space-x-10">
@@ -52,6 +75,7 @@ export default function Header() {
           <a href="#" className="text-base font-medium hover:text-yellow-400 transition-colors duration-200">Help</a>
         </nav>
 
+<<<<<<< HEAD
         {/* Action Buttons */}
         <div className="flex items-center space-x-4">
           <button className="flex items-center space-x-2 hover:bg-white/20 px-4 py-2 rounded-full transition-all duration-200 backdrop-blur-sm">
@@ -94,5 +118,15 @@ export default function Header() {
         />
       )}
     </>
+=======
+        <button
+          onClick={handleLoginClick}
+          className="flex items-center space-x-2 hover:underline"
+        >
+          <span>Login</span>
+        </button>
+      </div>
+    </header>
+>>>>>>> 6790863 (Save local changes)
   );
 }
