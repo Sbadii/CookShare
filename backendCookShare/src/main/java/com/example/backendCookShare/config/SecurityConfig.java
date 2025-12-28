@@ -18,52 +18,18 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-        private final JwtAuthFilter jwtAuthFilter;
-        private final org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource;
+    private final JwtAuthFilter jwtAuthFilter;
 
-<<<<<<< HEAD
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-                http
-                                .csrf(csrf -> csrf.disable())
-
-                                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-
-                                .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/auth/**", "/uploads/**", "/error", "/actuator/**")
-                                                .permitAll()
-                                                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**")
-                                                .permitAll()
-                                                .requestMatchers(org.springframework.http.HttpMethod.GET, "/posts",
-                                                                "/posts/**")
-                                                .permitAll()
-                                                .requestMatchers("/comments/**")
-                                                .authenticated()
-                                                .anyRequest().authenticated() // tout le reste sécurisé
-                                )
-
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-                return http.build();
-        }
-
-        @Bean
-        public org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer webSecurityCustomizer() {
-                return (web) -> web.ignoring().requestMatchers("/uploads/**", "/actuator/**", "/error");
-        }
-}
-=======
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ← utilise le bean ci-dessous
+            .cors(cors -> cors.configurationSource(customCorsConfigurationSource())) // ✅ nom modifié
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // ✅ chemin corrigé
+                .requestMatchers("/auth/**", "/uploads/**", "/error", "/actuator/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/posts", "/posts/**").permitAll()
+                .requestMatchers("/comments/**").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> 
@@ -74,9 +40,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ✅ Ajoute ce bean pour que CORS fonctionne avec Spring Security
+    // ✅ Renommé pour éviter le conflit de bean
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource customCorsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -86,5 +52,9 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+    @Bean
+    public org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/uploads/**", "/actuator/**", "/error");
+    }
 }
->>>>>>> 6790863 (Save local changes)

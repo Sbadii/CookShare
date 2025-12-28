@@ -1,3 +1,4 @@
+// src/components/Footer.tsx
 "use client";
 
 import { useState } from "react";
