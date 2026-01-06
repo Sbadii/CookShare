@@ -1,9 +1,22 @@
+"use client";
+
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import RecommendedCarousel from "../../components/RecommendedCarousel";
 import CommentSection from "../../components/CommentSection";
+import RecipeCard from "../../components/RecipeCard";
 import { notFound } from "next/navigation";
-import { Clock, Heart, User, Calendar, ChefHat, Utensils } from "lucide-react";
+import {
+    Clock,
+    Heart,
+    User,
+    ChefHat,
+    Utensils,
+    MessageCircle,
+    Share2,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect, useState, use } from "react";
 
 interface Post {
     id: number;
@@ -16,7 +29,6 @@ interface Post {
     likeCount: number;
     commentCount: number;
     theme?: string;
-    type?: string;
     diet?: string;
     tutorial?: string;
     ingredients?: string;
@@ -28,234 +40,257 @@ interface Post {
     }[];
 }
 
-async function getPost(id: string): Promise<Post | null> {
-    try {
-        const res = await fetch(`http://localhost:8080/posts/${id}`, {
-            cache: "no-store",
-        });
-        if (!res.ok) return null;
-        return await res.json();
-    } catch (e) {
-        console.error(e);
-        return null;
-    }
-}
 
-async function getPosts(): Promise<Post[]> {
-    try {
-        const res = await fetch("http://localhost:8080/posts", {
-            cache: "no-store",
-        });
-        if (!res.ok) return [];
-        return await res.json();
-    } catch (e) {
-        console.error(e);
-        return [];
-    }
-}
-
-export default async function PostPage({
-    params,
+export default function PostPage({
+    params: paramsPromise,
 }: {
     params: Promise<{ id: string }>;
 }) {
-    const { id } = await params;
+    const params = use(paramsPromise);
+    const [post, setPost] = useState<Post | null>(null);
+    const [relatedPosts, setRelatedPosts] = useState<Post[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const post = await getPost(id);
-    const allPosts = await getPosts();
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const id = params.id;
+                const postRes = await fetch(`http://localhost:8080/posts/${id}`, {
+                    cache: "no-store",
+                });
 
-    if (!post) {
-        notFound();
+                let postData: Post | null = null;
+                if (postRes.ok) {
+                    postData = await postRes.json();
+                    setPost(postData);
+                }
+
+                const allRes = await fetch("http://localhost:8080/posts", {
+                    cache: "no-store",
+                });
+
+                if (allRes.ok) {
+                    const allData = await allRes.json();
+                    if (postData) {
+                        setRelatedPosts(allData.filter((p: Post) => p.id !== postData!.id));
+                    } else {
+                        setRelatedPosts(allData);
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [params.id]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
     }
 
-    // Filter out current post from related
-    const relatedPosts = allPosts.filter((p) => p.id !== post.id);
+    if (!post) notFound();
 
     return (
-        <div className="bg-gray-50 min-h-screen flex flex-col font-sans">
+        <div className="relative bg-[#e9e9e9] min-h-screen font-sans">
             <Header />
 
-            <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            {/* Pinterest-style Back/Nav spacing */}
+            <div className="h-24"></div>
 
-                {/* --- Top Section: Split Layout (Image Left / Info Right) --- */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16 items-start">
+            <main className="flex flex-col items-center w-full px-4 pb-12">
 
-                    {/* Left: Hero Image */}
-                    <div className="relative aspect-[4/3] lg:aspect-auto lg:h-[550px] rounded-3xl overflow-hidden shadow-2xl ring-1 ring-gray-900/5 group">
+                {/* --- Main Card --- */}
+                <div className="bg-white rounded-[32px] shadow-[rgba(0,0,0,0.1)_0px_4px_12px] w-full max-w-[1016px] flex flex-col md:flex-row overflow-hidden mb-12">
+
+                    {/* Left: Image Column */}
+                    <div className="w-full md:w-1/2 relative bg-gray-100 min-h-[400px] md:min-h-[600px]">
                         {post.imageUrl ? (
                             <img
                                 src={post.imageUrl}
                                 alt={post.title}
-                                className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+                                className="w-full h-full object-cover absolute inset-0"
                             />
                         ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white text-9xl">
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
                                 🍳
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
                     </div>
 
-                    {/* Right: Info Panel */}
-                    <div className="flex flex-col space-y-8 py-4 px-2">
+                    {/* Right: Content Column (Scrollable) */}
+                    <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col gap-6 max-h-[85vh] overflow-y-auto custom-scrollbar bg-white">
 
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-2 animate-fade-in">
-                            {post.theme && (
-                                <span className="px-4 py-1.5 bg-purple-100 text-purple-700 text-sm font-bold rounded-full border border-purple-200">
-                                    {post.theme}
-                                </span>
-                            )}
-                            {post.type && (
-                                <span className="px-4 py-1.5 bg-blue-100 text-blue-700 text-sm font-bold rounded-full border border-blue-200">
-                                    {post.type}
-                                </span>
-                            )}
-                            {post.diet && (
-                                <span className="px-4 py-1.5 bg-green-100 text-green-700 text-sm font-bold rounded-full border border-green-200">
-                                    {post.diet}
-                                </span>
-                            )}
-                        </div>
-
-                        {/* Title */}
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1]">
-                            {post.title}
-                        </h1>
-
-                        {/* Author & Date */}
-                        <div className="flex items-center gap-6 text-gray-600 border-b border-gray-200 pb-6">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center shadow-sm">
-                                    <User className="w-5 h-5 text-gray-600" />
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold">Auteur</p>
-                                    <p className="font-bold text-gray-900">{post.authorName}</p>
-                                </div>
-                            </div>
-                            <div className="h-8 w-px bg-gray-300"></div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                                    <Calendar className="w-5 h-5 text-gray-500" />
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase font-semibold">Publié le</p>
-                                    <p className="font-medium text-gray-900">{new Date(post.createdAt).toLocaleDateString()}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="p-4 bg-orange-50 rounded-2xl border border-orange-100 flex items-center gap-4">
-                                <div className="p-3 bg-white rounded-xl text-orange-600 shadow-sm">
-                                    <Clock className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-orange-600/80 font-medium">Temps de préparation</p>
-                                    <p className="text-xl font-bold text-gray-900">{post.cookingTime}</p>
-                                </div>
-                            </div>
-                            <div className="p-4 bg-rose-50 rounded-2xl border border-rose-100 flex items-center gap-4">
-                                <div className="p-3 bg-white rounded-xl text-rose-600 shadow-sm">
-                                    <Heart className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-rose-600/80 font-medium">Appréciations</p>
-                                    <p className="text-xl font-bold text-gray-900">{post.likeCount} J'aime</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Description Snippet */}
-                        <div className="prose prose-gray text-gray-600 leading-relaxed text-lg">
-                            {post.description}
-                        </div>
-
-                    </div>
-                </div>
-
-                {/* --- Content Section: Tutorial Stacked on Ingredients --- */}
-                <div className="flex flex-col gap-12 mb-24">
-
-                    {/* Top: Steps / Tutorial */}
-                    <div className="w-full">
-                        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-blue-50/50 shadow-sm">
-                            <div className="flex items-center gap-3 mb-8">
-                                <div className="p-2 bg-blue-100 rounded-lg">
-                                    <ChefHat className="w-8 h-8 text-blue-600" />
-                                </div>
-                                <h2 className="text-3xl font-bold text-gray-900">
-                                    Instructions de Préparation
-                                </h2>
-                            </div>
-
-                            {post.tutorial ? (
-                                <article className="prose prose-lg prose-blue max-w-none text-gray-700 whitespace-pre-line leading-8">
-                                    {post.tutorial}
-                                </article>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center py-16 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-                                    <ChefHat className="w-16 h-16 text-gray-300 mb-4" />
-                                    <p className="text-gray-500 text-lg font-medium">Aucun tutoriel disponible.</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Bottom: Ingredients */}
-                    <div className="w-full">
-                        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-                            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-                                <div className="p-2 bg-orange-100 rounded-lg">
-                                    <Utensils className="w-6 h-6 text-orange-600" />
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-900">Ingrédients</h3>
-                            </div>
-
-                            {post.ingredients ? (
-                                <div className="flex flex-col gap-3">
-                                    <div className="prose prose-orange text-gray-700 whitespace-pre-line leading-loose text-lg font-medium">
-                                        {post.ingredients}
+                        {/* Top Actions Hook */}
+                        <div className="flex justify-between items-center sticky top-0 bg-white z-20 pb-4">
+                            <div className="flex gap-2">
+                                <button className="p-3 hover:bg-gray-100 rounded-full transition-colors">
+                                    <Share2 className="w-5 h-5 text-gray-900" />
+                                </button>
+                                <button className="p-3 hover:bg-gray-100 rounded-full transition-colors">
+                                    <div className="flex gap-1">
+                                        <div className="w-1 h-1 bg-gray-900 rounded-full"></div>
+                                        <div className="w-1 h-1 bg-gray-900 rounded-full"></div>
+                                        <div className="w-1 h-1 bg-gray-900 rounded-full"></div>
                                     </div>
+                                </button>
+                            </div>
+                            {JSON.parse(localStorage.getItem("reposted_ids") || "[]").includes(post.id) ? (
+                                <div className="bg-gray-100 text-gray-500 px-8 py-3 rounded-full font-black border border-gray-200 cursor-default">
+                                    Déjà reposté
                                 </div>
                             ) : (
-                                <p className="text-gray-500 italic">Aucun ingrédient listé pour cette recette.</p>
+                                <button
+                                    onClick={() => {
+                                        const reposted = JSON.parse(localStorage.getItem("reposted_ids") || "[]");
+                                        localStorage.setItem("reposted_ids", JSON.stringify([...reposted, post.id]));
+                                        // Trigger re-render to show updated state
+                                        window.dispatchEvent(new Event('storage'));
+                                        setPost({ ...post });
+                                        alert("Recette repostée sur votre profil !");
+                                    }}
+                                    className="bg-[#e60023] text-white px-8 py-3 rounded-full font-black hover:bg-[#ad081b] transition-all active:scale-95 shadow-lg shadow-red-100"
+                                >
+                                    Reposter
+                                </button>
                             )}
                         </div>
-                    </div>
 
-                    {/* Comments Section */}
-                    <div className="w-full" id="comments">
-                        <CommentSection postId={post.id} comments={post.comments || []} />
-                    </div>
+                        {/* Title & Meta */}
+                        <div>
+                            <h1 className="text-3xl md:text-4xl font-black text-[#111] mb-4 leading-tight">
+                                {post.title}
+                            </h1>
+                            <div className="flex flex-wrap gap-4 text-sm text-gray-700">
+                                {post.description && <p className="font-medium text-gray-600">{post.description}</p>}
+                                <div className="flex items-center gap-4 mt-2">
+                                    <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
+                                        <Clock className="w-4 h-4 text-gray-500" />
+                                        <span className="font-bold text-gray-900">{post.cookingTime}</span>
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            const liked = JSON.parse(localStorage.getItem("liked_ids") || "[]");
+                                            let newLiked;
+                                            let newLikeCount = post.likeCount;
+                                            if (liked.includes(post.id)) {
+                                                newLiked = liked.filter((id: number) => id !== post.id);
+                                                newLikeCount--;
+                                            } else {
+                                                newLiked = [...liked, post.id];
+                                                newLikeCount++;
+                                            }
+                                            localStorage.setItem("liked_ids", JSON.stringify(newLiked));
+                                            setPost({ ...post, likeCount: newLikeCount });
+                                        }}
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all active:scale-90 ${JSON.parse(localStorage.getItem("liked_ids") || "[]").includes(post.id)
+                                            ? "bg-red-50 text-red-600 shadow-sm"
+                                            : "bg-gray-50 text-gray-400 hover:text-red-400"
+                                            }`}
+                                    >
+                                        <Heart className={`w-4 h-4 ${JSON.parse(localStorage.getItem("liked_ids") || "[]").includes(post.id) ? "fill-red-600" : ""}`} />
+                                        <span className="font-bold">{post.likeCount}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
+                        {/* Author Section */}
+                        <div className="flex items-center gap-3 py-6 border-b border-gray-100">
+                            <div className="w-14 h-14 bg-[#FCD9BD] rounded-full flex items-center justify-center text-xl font-bold text-gray-700 shrink-0 shadow-inner">
+                                <User className="w-7 h-7" />
+                            </div>
+                            <div className="flex-grow">
+                                <p className="font-black text-gray-900 text-base hover:underline cursor-pointer">
+                                    {post.authorName}
+                                </p>
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">
+                                    Chef CookShare
+                                </p>
+                            </div>
+                            {/* Follow Button Logic */}
+                            {post.authorName !== localStorage.getItem("username") && (
+                                <>
+                                    {JSON.parse(localStorage.getItem("following") || "[]").includes(post.authorName) ? (
+                                        <div className="flex items-center gap-2 bg-gray-100 px-6 py-2.5 rounded-full text-gray-600 font-black text-sm border border-gray-200">
+                                            <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                            Suivi
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => {
+                                                const storedFollowing = JSON.parse(localStorage.getItem("following") || "[]");
+                                                localStorage.setItem("following", JSON.stringify([...storedFollowing, post.authorName]));
+                                                setPost({ ...post });
+                                            }}
+                                            className="px-8 py-2.5 rounded-full font-black text-sm transition-all active:scale-95 bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-100"
+                                        >
+                                            Suivre
+                                        </button>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        {/* Ingredients */}
+                        <div className="py-2">
+                            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                <Utensils className="w-5 h-5" />
+                                Ingrédients
+                            </h2>
+                            <div className="space-y-3">
+                                {post.ingredients?.split('\n').filter(Boolean).map((ing, i) => (
+                                    <div key={i} className="flex items-start gap-3">
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-300 shrink-0" />
+                                        <p className="text-gray-900 leading-snug">{ing}</p>
+                                    </div>
+                                )) || <p className="text-gray-400 text-sm">Aucun ingrédient listé.</p>}
+                            </div>
+                        </div>
+
+                        {/* Instructions */}
+                        <div className="py-2">
+                            <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                <ChefHat className="w-5 h-5" />
+                                Préparation
+                            </h2>
+                            <div className="prose prose-sm max-w-none text-gray-900 whitespace-pre-line leading-relaxed">
+                                {post.tutorial || "Aucune instruction."}
+                            </div>
+                        </div>
+
+                        {/* Comments */}
+                        <div className="pt-6 mt-4 border-t border-gray-100">
+                            <div className="flex items-center gap-2 mb-6">
+                                <h2 className="text-xl font-bold text-gray-900">Commentaires</h2>
+                                <span className="text-gray-500 font-semibold">{post.commentCount}</span>
+                                <div className="ml-auto cursor-pointer">
+                                    <MessageCircle className="w-6 h-6 text-gray-900" />
+                                </div>
+                            </div>
+                            <CommentSection postId={post.id} comments={post.comments || []} />
+                        </div>
+
+                    </div>
                 </div>
 
-            </main>
-
-            {/* --- Recommendations Section (Netflix Style - Full Width) --- */}
-            {relatedPosts.length > 0 && (
-                <section className="bg-gray-900 w-full py-16 text-white overflow-hidden relative">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-800 via-gray-900 to-black opacity-50 pointer-events-none"></div>
-
-                    <div className="relative pl-8 mb-8">
-                        <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-                            Plus de recettes à explorer
-                        </h2>
-                        <p className="text-gray-400 mt-2">Basé sur vos préférences</p>
-                    </div>
-
-                    {/* Horizontal Scroll Component - Full Width Container */}
-                    <div className="relative w-full">
+                {/* More Like This */}
+                {relatedPosts.length > 0 && (
+                    <div className="w-full max-w-[1400px] mt-8">
+                        <h3 className="text-center text-xl font-bold text-gray-900 mb-6">Plus de contenus similaires</h3>
                         <RecommendedCarousel posts={relatedPosts} />
                     </div>
-                </section>
-            )}
+                )}
 
-
+            </main>
         </div>
     );
 }
-

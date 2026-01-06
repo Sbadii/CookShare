@@ -61,4 +61,11 @@ public class PostController {
             throw e;
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+        log.info("🗑️ Received request to delete post with ID: {}", id);
+        postService.deletePost(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -73,32 +73,32 @@ export default function CommentSection({ postId, comments: initialComments }: Co
   };
 
   return (
-    <div className="w-full bg-white rounded-3xl shadow-lg border border-gray-100 p-8 md:p-12">
-      <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2">
-        💬 Commentaires ({comments.length})
-      </h3>
+    <div className="w-full bg-white rounded-[24px] border border-gray-100 p-6 md:p-8">
+      <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-50">
+        
+      </div>
 
       {/* List */}
-      <div className="space-y-8 mb-10 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+      <div className="space-y-6 mb-8 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
         {comments.length > 0 ? (
           comments.map((comment) => (
-            <div key={comment.id} className="flex gap-4 animate-in fade-in slide-in-from-bottom-2">
+            <div key={comment.id} className="flex gap-3">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center border border-orange-200">
-                  <span className="font-bold text-orange-600 text-sm">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
+                  <span className="font-bold text-gray-500 text-[10px]">
                     {comment.authorName ? comment.authorName.charAt(0).toUpperCase() : '?'}
                   </span>
                 </div>
               </div>
               <div className="flex-grow">
-                <div className="bg-gray-50 rounded-2xl rounded-tl-none p-4 border border-gray-100">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-gray-900">{comment.authorName || 'Utilisateur inconnu'}</span>
-                    <span className="text-xs text-gray-400">
+                <div className="bg-gray-50 rounded-2xl rounded-tl-none p-3 border border-gray-100/50">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-black text-gray-900 tracking-tight">{comment.authorName || 'Utilisateur'}</span>
+                    <span className="text-[10px] font-bold text-gray-300">
                       {comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : ''}
                     </span>
                   </div>
-                  <p className="text-gray-700 leading-relaxed text-sm">
+                  <p className="text-sm text-gray-600 leading-snug">
                     {comment.content}
                   </p>
                 </div>
@@ -106,27 +106,27 @@ export default function CommentSection({ postId, comments: initialComments }: Co
             </div>
           ))
         ) : (
-          <div className="text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-            <p className="text-gray-400">Soyez le premier à commenter !</p>
+          <div className="text-center py-8">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Soyez le premier à commenter !</p>
           </div>
         )}
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="relative">
+      <form onSubmit={handleSubmit} className="relative mt-6">
         <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Partagez votre avis sur cette recette..."
-          className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 pr-14 h-24 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 focus:outline-none transition-all resize-none text-gray-700 placeholder:text-gray-400"
+          placeholder="Ajouter un commentaire..."
+          className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 pr-12 min-h-[48px] max-h-[120px] focus:ring-2 focus:ring-red-500/10 focus:border-red-500 focus:outline-none transition-all resize-none text-sm text-gray-700 placeholder:text-gray-400 placeholder:font-bold placeholder:text-[10px] placeholder:uppercase tracking-tight"
         />
         <button
           type="submit"
           disabled={loading || !newComment.trim()}
-          className="absolute bottom-4 right-4 p-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl shadow-lg hover:shadow-orange-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute right-2 bottom-2 p-2 text-red-600 hover:text-red-700 transition-colors disabled:opacity-30"
         >
           {loading ? (
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-red-600/30 border-t-red-600 rounded-full animate-spin" />
           ) : (
             <Send className="w-5 h-5" />
           )}

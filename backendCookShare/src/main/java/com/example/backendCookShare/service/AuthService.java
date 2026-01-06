@@ -20,12 +20,27 @@ public class AuthService {
     private final JwtService jwtService;
 
     // =============================
-    //          REGISTER
+    // REGISTER
     // =============================
-    public AuthResponse register(RegisterRequest request) {
-
+    public AuthResponse register(RegisterRequest request, org.springframework.web.multipart.MultipartFile avatar) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
+        }
+
+        String avatarUrl = null;
+        if (avatar != null && !avatar.isEmpty()) {
+            try {
+                String filename = System.currentTimeMillis() + "_" + avatar.getOriginalFilename();
+                java.nio.file.Path uploadDir = java.nio.file.Paths.get("uploads");
+                if (!java.nio.file.Files.exists(uploadDir)) {
+                    java.nio.file.Files.createDirectories(uploadDir);
+                }
+                java.nio.file.Path path = uploadDir.resolve(filename);
+                java.nio.file.Files.copy(avatar.getInputStream(), path);
+                avatarUrl = "http://localhost:8080/uploads/" + filename;
+            } catch (java.io.IOException e) {
+                throw new RuntimeException("Failed to upload avatar", e);
+            }
         }
 
         User user = User.builder()
@@ -33,6 +48,7 @@ public class AuthService {
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .avatarUrl(avatarUrl)
                 .build();
 
         userRepository.save(user);
@@ -44,12 +60,11 @@ public class AuthService {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getAvatarUrl()
-        );
+                user.getAvatarUrl());
     }
 
     // =============================
-    //            LOGIN
+    // LOGIN
     // =============================
     public AuthResponse login(LoginRequest request) {
 
@@ -67,7 +82,6 @@ public class AuthService {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getAvatarUrl()
-        );
+                user.getAvatarUrl());
     }
 }

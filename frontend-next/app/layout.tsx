@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "./components/Sidebar";
+import Footer from "./components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,13 +24,13 @@ export default function RootLayout({
         <div className="flex">
 
           {/* SIDEBAR */}
-         {/* <Sidebar /> */}
+     
 
           {/* CONTENU */}
-          <main className="flex-1 ml-16 relative min-h-screen">
+          <main className="flex-1 relative min-h-screen">
             {children}
           </main>
-
+         
         </div>
       </body>
     </html>

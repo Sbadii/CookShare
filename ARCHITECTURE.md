@@ -15,8 +15,7 @@
 CookShare/
 ├── backendCookShare/          # Backend Spring Boot
 ├── frontend-next/             # Frontend Next.js
-├── frontendcookshare/         # Frontend React
-└── README.md
+
 ```
 
 ---
@@ -361,4 +360,93 @@ Le backend suit le pattern **MVC (Model-View-Controller)** adapté pour une API 
 - **Config** : Configuration de l'application
 
 Cette architecture permet une séparation claire des responsabilités et facilite la maintenance.
+---
 
+## 🎨 Frontend - Structure Détaillée (`frontend-next`)
+
+Le frontend est une application **Next.js** moderne utilisant l'App Router, TypeScript et Tailwind CSS.
+
+### 📁 Structure des Dossiers
+
+```
+frontend-next/
+├── app/                      # Dossier principal (App Router)
+│   ├── components/           # Composants React réutilisables
+│   ├── login/                # Page de connexion
+│   ├── register/             # Page d'inscription
+│   ├── post/[id]/            # Page de détail d'une recette (route dynamique)
+│   ├── layout.tsx            # Layout racine (Sidebar, providers)
+│   ├── page.tsx              # Page d'accueil (Feed de recettes)
+│   └── globals.css           # Styles globaux et config Tailwind
+├── lib/                      # Utilitaires et configuration API
+│   └── api.tsx               # Point d'entrée de l'URL Backend
+├── public/                   # Assets statiques (images, icônes)
+└── package.json              # Dépendances et scripts
+```
+
+---
+
+## 🧩 Composants Principaux
+
+### 1. **Composants d'Interface**
+- **`Header.tsx`** : Barre de navigation supérieure avec recherche et profil utilisateur.
+- **`Sidebar.tsx`** : Menu latéral pour la navigation entre les catégories et sections.
+- **`Footer.tsx`** : Pied de page contenant les informations légales et liens utiles.
+- **`HeroBanner.tsx`** : Section de mise en avant sur la page d'accueil.
+- **`Sidebar.tsx`** : Navigation latérale simplifiée (style Pinterest).
+
+### 2. **Composants de Contenu**
+- **`RecipeCard.tsx`** : Carte affichant l'aperçu d'une recette (image, titre, auteur, likes).
+- **`RecommendedCarousel.tsx`** : Carrousel de recettes recommandées.
+- **`CommentSection.tsx`** : Gestion de l'affichage et de l'ajout de commentaires sur une recette.
+- **`CreatePostModal.tsx`** : Formulaire modal complexe pour créer une nouvelle recette (titre, ingrédients, tutoriel, upload d'image).
+
+---
+
+## 🚦 Navigation et Routes
+
+- **`/`** : Page d'accueil affichant la bannière et la grille de recettes.
+- **`/login`** : Interface de connexion avec animations fluides.
+- **`/register`** : Interface de création de compte.
+- **`/post/[id]`** : Vue détaillée d'une recette spécifique, incluant les ingrédients, les étapes et les commentaires.
+
+---
+
+## 🔐 Authentification Frontend
+
+L'authentification est gérée de manière **Stateless** :
+1. L'utilisateur se connecte via `/login`.
+2. Le backend retourne un **JWT (JSON Web Token)**.
+3. Le token est stocké dans le `localStorage` du navigateur.
+4. Pour chaque requête protégée (ex: créer un post), le token est ajouté dans le header `Authorization: Bearer <token>`.
+
+---
+
+## 📡 Communication avec le Backend
+
+- **URL de base** : Définie dans `lib/api.tsx` (`http://localhost:8080`).
+- **Méthode** : Utilisation de l'API native `fetch` de JavaScript/Next.js.
+- **Interactions** :
+  - `GET /posts` : Récupération de la liste des recettes.
+  - `POST /auth/login` : Authentification.
+  - `POST /posts` : Création de recette (multipart/form-data pour l'image).
+  - `POST /comments` : Ajout de commentaires.
+
+---
+
+## 🛠️ Technologies Frontend
+
+- **Framework** : Next.js 16 (React 19)
+- **Langage** : TypeScript
+- **Styling** : Tailwind CSS 4 (utilisant `@tailwindcss/postcss`)
+- **Icônes** : Lucide React
+- **Animations** : CSS natif et transitions Tailwind
+- **Fonts** : Google Fonts (Inter)
+
+---
+
+## 🎯 Principes de Design
+
+- **Esthétique** : Inspiré de Pinterest pour la disposition des cartes.
+- **Réactivité** : Design fully responsive (mobile, tablette, desktop).
+- **Expérience Utilisateur** : États de chargement (skeletons), retours d'erreurs visuels et animations de transition.

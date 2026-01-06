@@ -1,80 +1,21 @@
 import Header from "./components/Header";
-import HeroBanner from "./components/HeroBanner";
 import Footer from "./components/Footer";
-import RecipeCard from "./components/RecipeCard";
+import PinterestHero from "./components/PinterestHero";
+import LandingInfoSection from "./components/LandingInfoSection";
 
-interface Post {
-  id: number;
-  title: string;
-  description: string;
-  cookingTime: string;
-  imageUrl: string;
-  createdAt: string;
-  authorName: string;
-  likeCount: number;
-  commentCount: number;
-  theme?: string;
-  type?: string;
-  diet?: string;
-}
-
-async function getPosts(query: string = ""): Promise<Post[]> {
-  try {
-    const url = query
-      ? `http://localhost:8080/posts?query=${encodeURIComponent(query)}`
-      : "http://localhost:8080/posts";
-
-    const res = await fetch(url, {
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    return await res.json();
-  } catch {
-    return [];
-  }
-}
-
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ query?: string }>;
-}) {
-  const { query } = await searchParams;
-  const posts = await getPosts(query);
-
+export default function HomePage() {
   return (
-    // ✅ WRAPPER VISUEL OBLIGATOIRE
-    <div className="bg-gray-50 min-h-screen">
-
+    <main className="bg-white min-h-screen">
+      {/* Header is absolute in its definition, will overlap hero */}
       <Header />
-      <HeroBanner />
 
-      {/* Pinterest-like Masonry */}
-      <section className="px-4 sm:px-6 lg:px-10 py-12">
-        {posts.length === 0 ? (
-          <div className="text-center py-32 text-gray-400">
-            <div className="text-6xl mb-4">🍳</div>
-            <p className="text-xl">Aucune recette disponible</p>
-          </div>
-        ) : (
-          <div
-            className="
-              columns-1
-              sm:columns-2
-              md:columns-3
-              lg:columns-4
-              xl:columns-5
-              gap-6
-            "
-          >
-            {posts.map((post) => (
-              <RecipeCard key={post.id} post={post} />
-            ))}
-          </div>
-        )}
-      </section>
+      {/* Dynamic Pinterest Hero */}
+      <PinterestHero />
+
+      {/* Dynamic Info Sections below */}
+      <LandingInfoSection />
 
       <Footer />
-    </div>
+    </main>
   );
 }

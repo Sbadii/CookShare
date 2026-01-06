@@ -105,4 +105,18 @@ public class PostService {
 
         return postMapper.toResponse(savedPost);
     }
+
+    @Transactional
+    public void deletePost(Long id) {
+        String email = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication()
+                .getName();
+        com.example.backendCookShare.model.entity.Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getAuthor().getEmail().equals(email)) {
+            throw new RuntimeException("You are not authorized to delete this post");
+        }
+
+        postRepository.delete(post);
+    }
 }
