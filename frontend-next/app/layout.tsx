@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
+import AuthGuard from "./components/AuthGuard";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,13 +25,15 @@ export default function RootLayout({
         <div className="flex">
 
           {/* SIDEBAR */}
-     
+
 
           {/* CONTENU */}
           <main className="flex-1 relative min-h-screen">
-            {children}
+            <AuthGuard>
+              {children}
+            </AuthGuard>
           </main>
-         
+
         </div>
       </body>
     </html>

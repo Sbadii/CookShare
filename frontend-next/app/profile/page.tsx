@@ -59,11 +59,16 @@ export default function ProfilePage() {
         if (typeof window !== "undefined") {
             loadUserData();
 
+            const token = localStorage.getItem("token");
             const currentUsername = localStorage.getItem("username");
             const repostedIds = JSON.parse(localStorage.getItem("reposted_ids") || "[]");
             const likedIds = JSON.parse(localStorage.getItem("liked_ids") || "[]");
 
-            fetch("http://localhost:8080/posts")
+            fetch("http://localhost:8080/posts", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
                 .then(res => res.json())
                 .then(data => {
                     // Mes Posts

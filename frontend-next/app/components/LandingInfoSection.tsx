@@ -69,6 +69,7 @@ export default function LandingInfoSection() {
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
+                            onClick={() => window.location.href = "/feed"}
                             className={`px-10 py-4 rounded-full text-white font-bold text-lg shadow-xl transition-all ${section.btnColor}`}
                         >
                             Explorer

@@ -32,11 +32,6 @@ public class SecurityConfig {
                                                 .permitAll()
                                                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**")
                                                 .permitAll()
-                                                .requestMatchers(org.springframework.http.HttpMethod.GET, "/posts",
-                                                                "/posts/**")
-                                                .permitAll()
-                                                .requestMatchers("/comments/**")
-                                                .authenticated()
                                                 .anyRequest().authenticated() // tout le reste sécurisé
                                 )
 

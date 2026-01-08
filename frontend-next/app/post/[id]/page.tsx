@@ -55,7 +55,11 @@ export default function PostPage({
         const fetchData = async () => {
             try {
                 const id = params.id;
+                const token = localStorage.getItem("token");
                 const postRes = await fetch(`http://localhost:8080/posts/${id}`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    },
                     cache: "no-store",
                 });
 
@@ -66,6 +70,9 @@ export default function PostPage({
                 }
 
                 const allRes = await fetch("http://localhost:8080/posts", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    },
                     cache: "no-store",
                 });
 

@@ -73,6 +73,9 @@ export default function Header() {
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("fullName");
+    localStorage.removeItem("liked_ids");
+    localStorage.removeItem("reposted_ids");
+    localStorage.removeItem("following");
     setIsLoggedIn(false);
     setShowUserDropdown(false);
     router.refresh();
@@ -119,18 +122,26 @@ export default function Header() {
 
         {/* Center Section: Search Bar */}
         <div className="flex-1 max-w-2xl mx-10">
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-              <svg className="w-4 h-4 text-gray-400 group-focus-within:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const query = formData.get("search") as string;
+              router.push(`/feed?query=${encodeURIComponent(query)}`);
+            }}
+            className="relative group w-full"
+          >
+          
             <input
               type="text"
-              placeholder="Search"
-              className="w-full h-12 pl-12 pr-6 bg-[#efefef] border-transparent rounded-full text-base font-normal focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:bg-white border focus:border-red-100 transition-all"
+              name="search"
+              autoComplete="off"
+              placeholder="Chercher une recette, un ingrédient..."
+              className="w-full h-12 pl-16 pr-6 bg-[#f0f0f0] border-2 border-transparent rounded-full text-gray-900 text-lg font-bold placeholder:text-gray-500 placeholder:font-medium focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:bg-white focus:border-red-100 transition-all shadow-sm group-hover:bg-[#e8e8e8]"
             />
-          </div>
+            {/* Hidden submit button to allow Enter key without messy UI button */}
+            <button type="submit" className="hidden">Search</button>
+          </form>
         </div>
 
         {/* Right Section: Action Buttons */}
