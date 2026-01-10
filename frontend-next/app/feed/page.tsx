@@ -84,7 +84,7 @@ export default function FeedPage() {
     return (
         <div className="bg-gray-50 min-h-screen">
             <Header />
-            <div className="h-20 md:h-20"></div> {/* Spacer for fixed header */}
+            <div className="h-17 md:h-17"></div> {/* Spacer for fixed header */}
 
             <Suspense fallback={
                 <div className="flex justify-center items-center py-32">

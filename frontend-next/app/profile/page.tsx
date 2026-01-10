@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,8 +17,10 @@ export default function ProfilePage() {
         username: "",
         email: "",
         fullName: "",
-        initial: ""
+        initial: "",
+        profileImage: ""
     });
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Individual field editing states
     const [editingField, setEditingField] = useState<string | null>(null);
@@ -46,12 +48,14 @@ export default function ProfilePage() {
             const storedEmail = localStorage.getItem("email") || "";
             const storedFullName = localStorage.getItem("fullName") || "";
             const storedFollowing = JSON.parse(localStorage.getItem("following") || "[]");
+            const storedImage = localStorage.getItem("profileImage") || "";
 
             setUser({
                 username: storedUsername,
                 email: storedEmail,
                 fullName: storedFullName,
-                initial: storedUsername ? storedUsername.charAt(0).toUpperCase() : "U"
+                initial: storedUsername ? storedUsername.charAt(0).toUpperCase() : "U",
+                profileImage: storedImage
             });
             setFollowing(storedFollowing);
         };
@@ -98,6 +102,19 @@ export default function ProfilePage() {
 
         setEditingField(null);
         alert("Champ mis à jour avec succès !");
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                setUser({ ...user, profileImage: base64String });
+                localStorage.setItem("profileImage", base64String);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleChangePassword = () => {
@@ -171,15 +188,17 @@ export default function ProfilePage() {
                 {/* Profile Header section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">
-                            Vos idées enregistrées
-                        </h1>
+
                     </div>
 
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-[#FCD9BD] rounded-full flex items-center justify-center text-3xl font-black text-gray-900 shadow-sm border-4 border-white">
-                                {user.initial}
+                            <div className="w-16 h-16 bg-[#FCD9BD] rounded-full flex items-center justify-center text-3xl font-black text-gray-900 shadow-sm border-4 border-white overflow-hidden">
+                                {user.profileImage ? (
+                                    <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    user.initial
+                                )}
                             </div>
                             <div className="flex flex-col">
                                 <h2 className="text-xl font-bold text-gray-900">{user.fullName || user.username}</h2>
@@ -193,20 +212,21 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Tabs Navigation */}
-                <div className="flex flex-col mb-10">
-                    <div className="flex items-center justify-center space-x-12 mb-6">
+                <div className="flex flex-col mb-12 border-b border-gray-100">
+                    <div className="flex items-center justify-center gap-10 md:gap-16">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                className={`relative py-2 text-base font-bold transition-colors ${activeTab === tab.id ? "text-gray-900" : "text-gray-500 hover:text-gray-900"
+                                className={`relative py-4 text-sm md:text-base font-bold transition-all duration-200 hover:text-gray-900 active:scale-95 ${activeTab === tab.id ? "text-gray-900" : "text-gray-500"
                                     }`}
                             >
-                                {tab.label}
+                                <span className="relative z-10 px-2">{tab.label}</span>
                                 {activeTab === tab.id && (
                                     <motion.div
                                         layoutId="activeTabUnderline"
-                                        className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-900 rounded-full"
+                                        className="absolute bottom-0 left-0 right-0 h-[3px] bg-red-600 rounded-full"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                     />
                                 )}
                             </button>
@@ -233,14 +253,27 @@ export default function ProfilePage() {
                                     </div>
 
                                     <div className="space-y-12">
-                                        {/* Avatar Section */}
                                         <div className="flex flex-col gap-6">
                                             <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Photo de profil</label>
                                             <div className="flex items-center gap-10">
-                                                <div className="w-28 h-28 bg-[#FCD9BD] rounded-full flex items-center justify-center text-5xl font-black text-gray-900 shadow-inner">
-                                                    {user.initial}
+                                                <div className="w-28 h-28 bg-[#FCD9BD] rounded-full flex items-center justify-center text-5xl font-black text-gray-900 shadow-inner overflow-hidden">
+                                                    {user.profileImage ? (
+                                                        <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        user.initial
+                                                    )}
                                                 </div>
-                                                <button className="px-7 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-900 font-black rounded-full transition-all active:scale-95 text-base">
+                                                <input
+                                                    type="file"
+                                                    ref={fileInputRef}
+                                                    onChange={handleImageChange}
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                />
+                                                <button
+                                                    onClick={() => fileInputRef.current?.click()}
+                                                    className="px-7 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-900 font-black rounded-full transition-all active:scale-95 text-base"
+                                                >
                                                     Changer la photo
                                                 </button>
                                             </div>
@@ -627,10 +660,10 @@ export default function ProfilePage() {
                                             Partagez vos meilleures recettes pour attirer des gourmets et des passionnés de cuisine dans votre communauté.
                                         </p>
                                         <div className="flex justify-center gap-4">
-                                            <button className="px-8 py-4 bg-[#e60023] text-white font-black rounded-full hover:bg-[#ad081b] transition-all shadow-xl shadow-red-100 active:scale-95">
-                                                Partager mon profil
-                                            </button>
-                                            <button className="px-8 py-4 bg-gray-100 text-gray-900 font-black rounded-full hover:bg-gray-200 transition-all active:scale-95">
+                                            <button
+                                                onClick={() => router.push("/feed")}
+                                                className="px-8 py-4 bg-[#e60023] text-white font-black rounded-full hover:bg-[#ad081b] transition-all shadow-xl shadow-red-100 active:scale-95"
+                                            >
                                                 Trouver des amis
                                             </button>
                                         </div>

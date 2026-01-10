@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import CreatePostModal from "./CreatePostModal";
 import Link from "next/link";
 import AuthModal from "./AuthModal";
+import Image from "next/image";
 
 export default function Header() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function Header() {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [scrolled, setScrolled] = useState(false);
+  const [profileImage, setProfileImage] = useState("");
 
   useEffect(() => {
     // Check if running on client and token exists
@@ -25,10 +27,12 @@ export default function Header() {
       const storedUsername = localStorage.getItem("username");
       const storedEmail = localStorage.getItem("email");
       const storedFullName = localStorage.getItem("fullName");
+      const storedImage = localStorage.getItem("profileImage");
       setIsLoggedIn(!!token);
       if (storedUsername) setUsername(storedUsername);
       if (storedEmail) setEmail(storedEmail);
       if (storedFullName) setFullName(storedFullName);
+      if (storedImage) setProfileImage(storedImage);
     }
 
     const handleScroll = () => {
@@ -69,10 +73,22 @@ export default function Header() {
   };
 
   const handleLogout = () => {
+    const currentUsername = localStorage.getItem("username");
+    if (currentUsername) {
+      // Backup user data
+      const liked = localStorage.getItem("liked_ids");
+      const reposted = localStorage.getItem("reposted_ids");
+      const following = localStorage.getItem("following");
+      if (liked) localStorage.setItem(`liked_ids_${currentUsername}`, liked);
+      if (reposted) localStorage.setItem(`reposted_ids_${currentUsername}`, reposted);
+      if (following) localStorage.setItem(`following_${currentUsername}`, following);
+    }
+
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("fullName");
+    localStorage.removeItem("profileImage"); // Also clear profile image on logout
     localStorage.removeItem("liked_ids");
     localStorage.removeItem("reposted_ids");
     localStorage.removeItem("following");
@@ -87,33 +103,38 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 w-full flex items-center justify-between px-6 md:px-10 h-20 z-50 transition-all duration-300 bg-white ${scrolled ? "shadow-md" : "border-b border-gray-100"
+        className={`fixed top-0 w-full flex items-center justify-between px-6 md:px-10 h-16 z-50 transition-all duration-300 bg-white ${scrolled ? "shadow-md" : "border-b border-gray-100"
           }`}
       >
         {/* Left Section: Logo & Navigation */}
-        <div className="flex items-center space-x-6 shrink-0">
+        <div className="flex items-center gap-16 shrink-0">
           <Link href="/" className="flex items-center">
-            <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white text-2xl font-black shadow-lg hover:bg-red-700 transition-colors">
-              🍳
-            </div>
+            <Image
+              src="/logo8.png"
+              alt="CookShare Logo"
+              width={64}
+              height={64}
+              className="w-16 h-16 object-contain hover:scale-110 transition-transform"
+              priority
+            />
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center gap-10">
             <Link
               href="/feed"
-              className="px-4 py-2.5 text-gray-900 font-black hover:bg-gray-100 rounded-full transition-colors whitespace-nowrap"
+              className="px-4 py-2.5 text-gray-900 font-semibold hover:bg-gray-100 rounded-full transition-colors whitespace-nowrap text-lg"
             >
               Explorer
             </Link>
             <Link
               href="#"
-              className="px-4 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+              className="px-4 py-2.5 text-lg font-semibold text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
             >
               À propos
             </Link>
             <Link
               href="#"
-              className="px-4 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+              className="px-4 py-2.5 text-lg font-semibold text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
             >
               Aide
             </Link>
@@ -131,12 +152,12 @@ export default function Header() {
             }}
             className="relative group w-full"
           >
-          
+
             <input
               type="text"
               name="search"
               autoComplete="off"
-              placeholder="Chercher une recette, un ingrédient..."
+              placeholder="Chercher une recette, un ingrédient ou un auteur..."
               className="w-full h-12 pl-16 pr-6 bg-[#f0f0f0] border-2 border-transparent rounded-full text-gray-900 text-lg font-bold placeholder:text-gray-500 placeholder:font-medium focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:bg-white focus:border-red-100 transition-all shadow-sm group-hover:bg-[#e8e8e8]"
             />
             {/* Hidden submit button to allow Enter key without messy UI button */}
@@ -166,9 +187,13 @@ export default function Header() {
                   className="flex items-center gap-1 hover:bg-gray-100 p-1 rounded-full transition-colors group"
                 >
                   <div
-                    className="w-12 h-12 rounded-full bg-[#FCD9BD] text-gray-900 flex items-center justify-center font-black text-lg transition-all"
+                    className="w-12 h-12 rounded-full bg-[#FCD9BD] text-gray-900 flex items-center justify-center font-black text-lg transition-all overflow-hidden"
                   >
-                    {usernameInitial}
+                    {profileImage ? (
+                      <img src={profileImage} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      usernameInitial
+                    )}
                   </div>
                   <div className="w-6 h-6 flex items-center justify-center text-gray-500 group-hover:text-gray-900">
                     <svg className={`w-4 h-4 transition-transform duration-200 ${showUserDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,7 +206,7 @@ export default function Header() {
                 {showUserDropdown && (
                   <div
                     id="user-dropdown"
-                    className="absolute right-0 top-[120%] w-[300px] bg-white rounded-[24px] shadow-[0_0_24px_rgba(0,0,0,0.15)] border border-gray-100 py-4 z-[100] overflow-hidden"
+                    className="absolute right-0 top-[120%] w-[360px] bg-white rounded-2xl shadow-[0_0_24px_rgba(0,0,0,0.15)] border border-gray-100 py-6 z-[100] overflow-hidden"
                   >
                     <div className="px-4 mb-2">
                       <p className="text-[12px] text-gray-700 font-medium px-2 mb-2">Actuellement connecté</p>
@@ -190,8 +215,12 @@ export default function Header() {
                         className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-2xl transition-all group"
                         onClick={() => setShowUserDropdown(false)}
                       >
-                        <div className="w-16 h-16 bg-[#FCD9BD] rounded-full flex items-center justify-center text-2xl font-black text-gray-900 shrink-0">
-                          {usernameInitial}
+                        <div className="w-16 h-16 bg-[#FCD9BD] rounded-full flex items-center justify-center text-2xl font-black text-gray-900 shrink-0 overflow-hidden">
+                          {profileImage ? (
+                            <img src={profileImage} alt="Avatar" className="w-full h-full object-cover" />
+                          ) : (
+                            usernameInitial
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[16px] font-bold text-gray-900 truncate">{fullName || username}</p>
@@ -227,16 +256,16 @@ export default function Header() {
               </div>
             </>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-6">
               <button
                 onClick={() => { setAuthMode("register"); setShowAuthModal(true); }}
-                className="px-6 py-3 bg-[#f0f0f0] hover:bg-[#e0e0e0] text-gray-900 rounded-full font-black text-sm transition-all whitespace-nowrap"
+                className="text-gray-600 hover:text-gray-900 font-semibold text-lg transition-all whitespace-nowrap active:scale-95"
               >
                 Sign up
               </button>
               <button
                 onClick={() => { setAuthMode("login"); setShowAuthModal(true); }}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-full font-black text-sm transition-all shadow-md whitespace-nowrap"
+                className="text-red-600 hover:text-red-700 font-semibold text-lg transition-all whitespace-nowrap active:scale-95"
               >
                 Log in
               </button>

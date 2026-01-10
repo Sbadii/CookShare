@@ -29,7 +29,9 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<PostResponse> searchPosts(String query) {
-        return postRepository.findByTitleContainingIgnoreCaseOrIngredientsContainingIgnoreCase(query, query)
+        return postRepository
+                .findByTitleContainingIgnoreCaseOrIngredientsContainingIgnoreCaseOrAuthorUsernameContainingIgnoreCase(
+                        query, query, query)
                 .stream()
                 .map(postMapper::toResponse)
                 .collect(Collectors.toList());

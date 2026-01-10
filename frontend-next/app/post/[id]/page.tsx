@@ -210,8 +210,12 @@ export default function PostPage({
 
                         {/* Author Section */}
                         <div className="flex items-center gap-3 py-6 border-b border-gray-100">
-                            <div className="w-14 h-14 bg-[#FCD9BD] rounded-full flex items-center justify-center text-xl font-bold text-gray-700 shrink-0 shadow-inner">
-                                <User className="w-7 h-7" />
+                            <div className="w-14 h-14 bg-[#FCD9BD] rounded-full flex items-center justify-center text-xl font-bold text-gray-700 shrink-0 shadow-inner overflow-hidden">
+                                {typeof window !== "undefined" && post.authorName === localStorage.getItem("username") && localStorage.getItem("profileImage") ? (
+                                    <img src={localStorage.getItem("profileImage")!} alt="Author" className="w-full h-full object-cover" />
+                                ) : (
+                                    <User className="w-7 h-7" />
+                                )}
                             </div>
                             <div className="flex-grow">
                                 <p className="font-black text-gray-900 text-base hover:underline cursor-pointer">

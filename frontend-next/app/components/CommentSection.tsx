@@ -75,7 +75,7 @@ export default function CommentSection({ postId, comments: initialComments }: Co
   return (
     <div className="w-full bg-white rounded-[24px] border border-gray-100 p-6 md:p-8">
       <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-50">
-        
+
       </div>
 
       {/* List */}
@@ -84,10 +84,14 @@ export default function CommentSection({ postId, comments: initialComments }: Co
           comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200">
-                  <span className="font-bold text-gray-500 text-[10px]">
-                    {comment.authorName ? comment.authorName.charAt(0).toUpperCase() : '?'}
-                  </span>
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden">
+                  {typeof window !== "undefined" && comment.authorName === localStorage.getItem("username") && localStorage.getItem("profileImage") ? (
+                    <img src={localStorage.getItem("profileImage")!} alt="Author" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="font-bold text-gray-500 text-[10px]">
+                      {comment.authorName ? comment.authorName.charAt(0).toUpperCase() : '?'}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex-grow">

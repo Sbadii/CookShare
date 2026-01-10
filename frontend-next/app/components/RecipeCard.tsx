@@ -74,7 +74,7 @@ export default function RecipeCard({ post }: RecipeCardProps) {
             )}
           </div>
 
-          
+
         </div>
 
         {/* CONTENT */}
@@ -89,8 +89,12 @@ export default function RecipeCard({ post }: RecipeCardProps) {
 
           <div className="flex items-center justify-between pt-2 mt-auto">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500 border border-gray-200">
-                {post.authorName ? post.authorName.charAt(0).toUpperCase() : 'U'}
+              <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500 border border-gray-200 overflow-hidden shrink-0">
+                {typeof window !== "undefined" && post.authorName === localStorage.getItem("username") && localStorage.getItem("profileImage") ? (
+                  <img src={localStorage.getItem("profileImage")!} alt="Author" className="w-full h-full object-cover" />
+                ) : (
+                  <span>{post.authorName ? post.authorName.charAt(0).toUpperCase() : 'U'}</span>
+                )}
               </div>
               <span className="text-xs font-bold text-gray-700 truncate max-w-[100px]">{post.authorName}</span>
             </div>
